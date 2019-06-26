@@ -15,5 +15,5 @@ The hardware is a LOLIN board. It is based on ESP8266. Its interface are:
  
  ## Domotic Architecture Element
  
- The DomesticCentralNode is connect to the sensors throught the BLE device. The central node provided its interface throught the Wifi interface.
+ The DomesticCentralNode is connected to the sensors throught the BLE device. The central node provided its interface throught the Wifi interface.
 
