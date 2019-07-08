@@ -126,26 +126,29 @@ typedef struct
 
 }WifiConnection_st;
 
-
-static PerifericalNode_st gListPNode[MAX_NODE_ELEMENTS];
-static uint8_t            gNumberNodes;
+/*Variables*/
+static PerifericalNode_st       gListPNode[MAX_NODE_ELEMENTS];
+static uint8_t                  gNumberNodes;
 static NodeCentralConfiguration gWifiConfiguration; 
-static uint8_t gInitStatus;
-static Ticker gCommanderTicker;
-static Ticker gHKTicker;
-static WifiConnection_st gWifiConnection =
-  {
-   .ssid = "",
-   .passw = "",
-   .tcp_port =12548
-   
-  };
+static uint8_t                  gInitStatus;
+static Ticker                   gCommanderTicker;
+static Ticker                   gHKTicker;
+static WifiConnection_st        gWifiConnection = {
+	.ssid = "",
+	.passw = "",
+	.tcp_port =12548};
+
 static WiFiServer gWifiServer(12548);
 
+
+
+/*Functions*/
+
 /*configuration */
+
 static uint8_t  configure_ble(void);
 static uint8_t  initvalueNodes(void);
-static void     configurewifi(void);
+static void     configureWifi(void);
 static void     configureWifiServer(void);
 static void     configureTimers(void);
 
@@ -158,13 +161,13 @@ static void      getAllReleStatus(uint8_t *status,uint8_t *numberNodes);
 
 
 /*Temperature operations*/
-static void       get_temperature_last_n_minutes(uint8_t node,uint16_t *minutes,TempRecord_st * record );
+static void           get_temperature_last_n_minutes(uint8_t node,uint16_t *minutes,TempRecord_st * record );
 static TempRecord_st  get_temperature(uint8_t node);
 static void           get_all_temperature_last_n_minutes(uint16_t minutes,TempRecord_st *record,uint16_t * tempnumber,uint8_t * readNodes);
 static void           get_temperature_all_nodes(TempRecord_st * records,uint16_t *  numberReadElements);
 
 static void                set_new_node(PerifericalNode_st datas, uint8_t index);
-  static PerifericalNode_st* get_information_node(uint16_t index);
+static PerifericalNode_st* get_information_node(uint16_t index);
 
 static void send_tm_initInvalid(uint8_t result);
 static void command_manager (void);
@@ -175,8 +178,93 @@ static void HKNodes();
 
 
 
+/*TODO*/
+static uint8_t  configure_ble(void)
+{
 
-  
+
+}
+
+/*TODO*/
+static uint8_t  initvalueNodes(void)
+{
+
+
+}
+
+
+/*TODO */
+static bool      isSwitchOnRele(uint16_t nodeIndex)
+{
+
+
+}
+
+/*TODO */
+static void      setSwithcRele(uint16_t node,uint8_t status)
+{
+
+}
+
+/*TODO*/
+static uint8_t   getReleStatus(uint16_t node)
+{
+
+}
+
+
+/*TODO*/
+static void      getAllReleStatus(uint8_t *status,uint8_t *numberNodes)
+{
+
+}
+
+
+/*TODO*/
+static void           get_temperature_last_n_minutes(uint8_t node,uint16_t *minutes,TempRecord_st * record )
+{
+
+}
+
+/*TODO*/
+static TempRecord_st  get_temperature(uint8_t node)
+{
+
+}
+
+/*TODO */
+static void           get_all_temperature_last_n_minutes(uint16_t minutes,TempRecord_st *record,uint16_t * tempnumber,uint8_t * readNodes)
+{
+
+}
+
+/*TODO*/
+
+static void           get_temperature_all_nodes(TempRecord_st * records,uint16_t *  numberReadElements)
+{
+
+
+}
+
+/*TODO*/
+static void                set_new_node(PerifericalNode_st datas, uint8_t index)
+{
+
+
+}
+
+/*TODO*/
+static PerifericalNode_st* get_information_node(uint16_t index)
+{
+
+
+}
+
+/*TODO*/
+static void send_tm_initInvalid(uint8_t result)
+{
+
+}
   
 void setup() {
 
@@ -198,7 +286,7 @@ void setup() {
   result += configure_ble() << 1u;
 
   Serial.println("Configure Wifi");
-  configurewifi();
+  configureWifi();
 
   Serial.println("Configure Server");
   configureWifiServer();
@@ -249,8 +337,6 @@ static void     configureTimers(void)
 static void configureWifi(void)
 
 {
-
-
   Serial.begin(115200);
   Serial.println();
 
@@ -533,8 +619,4 @@ static void command_manager (void)
         }
 
     }
-
-
-
-
 }
