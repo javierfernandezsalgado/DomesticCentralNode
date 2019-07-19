@@ -29,6 +29,10 @@
 #define TM_MAX         (3000u)
 
 
+#define BLE_RX   (13u)
+#define BLE_TX   (15u)
+#define BLE_EN   (16u)
+
 typedef enum
   {
    TEMPS=0,
@@ -97,7 +101,7 @@ typedef struct
 
 typedef struct
 {
-  uint8_t name[4u];
+  uint8_t name[19u];
   uint8_t status;
   uint8_t isSwitchAvalaible;
   uint8_t isTermistorAvalaible;
@@ -127,7 +131,7 @@ typedef struct
 }WifiConnection_st;
 
 /*Variables*/
-static PerifericalNode_st       gListPNode[MAX_NODE_ELEMENTS];
+static PerifericalNode_st       gListPNode[MAX_NODE_ELEMENTS] ;
 static uint8_t                  gNumberNodes;
 static NodeCentralConfiguration gWifiConfiguration; 
 static uint8_t                  gInitStatus;
@@ -138,8 +142,8 @@ static WifiConnection_st        gWifiConnection = {
 	.passw = "",
 	.tcp_port =12548};
 
-static WiFiServer gWifiServer(12548);
-
+static         WiFiServer gWifiServer(12548);
+SoftwareSerial gBle   (BLE_RX, BLE_TX);
 
 
 /*Functions*/
@@ -147,6 +151,7 @@ static WiFiServer gWifiServer(12548);
 /*configuration */
 
 static uint8_t  configure_ble(void);
+static void     setupBleConnection(uint16_t nodeIndex);
 static uint8_t  initvalueNodes(void);
 static void     configureWifi(void);
 static void     configureWifiServer(void);
@@ -178,51 +183,89 @@ static void HKNodes();
 
 
 
-/*TODO*/
+/*It configures the ble communication device*/
 static uint8_t  configure_ble(void)
 {
 
+	pinMode(BLE_EN,OUTPUT);
+	digitalWrite(BLE_EN,HIGH);
 
+	
+	gBle.begin(115200);
+	gBle.println("AT+NAME");
+	delay(1000);
+	gBle.println("AT");
+	dealy(1000);
+}
+
+/*
+	It set up a connection with a ble sensor.
+*/
+static void     setupBleConnection(uint16_t nodeIndex)
+{
+	uint8_t *name = &gListPNode[nodeIndex].name;
+
+	
+  delay(50);
+	digitalWrite(BLE_EN,LOW); 
+	delay(1000);
+	digitalWrite(BLE_EN,HIGH); 
+	gBle.println(*name);
+	delay(50);
 }
 
 /*TODO*/
 static uint8_t  initvalueNodes(void)
 {
+	static 	PerifericalNode_st node1;
+	static 	PerifericalNode_st node2;
+	static 	PerifericalNode_st node3;
+	static 	PerifericalNode_st node4;
 
+	/*TODO init with values*/
 
+	memcpy(&gListPNode[0],node1, sizeof(node1));
+	memcpy(&gListPNode[1],node1, sizeof(node2));
+	memcpy(&gListPNode[2],node1, sizeof(node3));
+	memcpy(&gListPNode[3],node1, sizeof(node4));
 }
 
 
 /*TODO */
 static bool      isSwitchOnRele(uint16_t nodeIndex)
 {
-
-
+	setupBleConnection(nodeIndex);
+	gBle.println("5");
+	
 }
 
 /*TODO */
 static void      setSwithcRele(uint16_t node,uint8_t status)
 {
+	setupBleConnection(nodeIndex);
+	gBle.println("3");
 
 }
 
 /*TODO*/
 static uint8_t   getReleStatus(uint16_t node)
 {
-
+	setupBleConnection(nodeIndex);
+	gBle.println("5");
 }
 
 
 /*TODO*/
 static void      getAllReleStatus(uint8_t *status,uint8_t *numberNodes)
 {
-
+	
 }
 
 
 /*TODO*/
 static void           get_temperature_last_n_minutes(uint8_t node,uint16_t *minutes,TempRecord_st * record )
 {
+	
 
 }
 
@@ -619,4 +662,12 @@ static void command_manager (void)
         }
 
     }
+}
+
+
+
+bool_t command_get_all_temps(uint8_t * command)
+{
+
+
 }
