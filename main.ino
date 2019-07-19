@@ -1,3 +1,6 @@
+
+
+
 /*The central node reads the perifical nodes status.
 
   It keeps a list of the perifericals that management.
@@ -10,7 +13,7 @@
 
 
 
-
+#include <assert.h>
 #include "ESP8266WiFi.h"
 #include <stdint.h>
 #include <time.h>
@@ -180,6 +183,33 @@ static void command_manager (void);
 
 static void cycleStandar();
 static void HKNodes();
+
+
+
+/*Commands*/
+
+/*Temperature commands*/
+bool_t command_get_all_temps(uint8_t * command);
+bool_t command_get_all_temps_minutes(uint8_t * command);
+bool_t command_get_temp(uint8_t * command );
+bool_t command_get_temp_minutes(uint8_t command);
+
+/*Rele commands*/
+bool_t command_rele_get_status(const uint8_t * command);
+bool_t command_rele_get_all_status(const uint8_t * command);
+bool_t command_rele_get_switch_on(const uint8_t * command);
+bool_t command_rele_get_all_switch_on(const uint8_t * command);
+bool_t command_rele_set_status(const uint8_t * command);
+
+/*Command info*/
+bool_t command_info_node_get_number_nodes(const uint8_t * command);
+bool_t command_info_node_get_all_node_info(const uint8_t * command);
+bool_t command_info_node_get_node_info(const uint8_t * command );
+bool_t command_info_set_node_info(const uint8_t * command);
+
+/*Comand central info*/
+bool_t command_central_info_set_info (const uint8_t * command);
+bool_t command_central_info_get_info(const uint8_t * command)
 
 
 
@@ -455,100 +485,25 @@ static void command_manager (void)
                   {
                   case GETALLTEMPS:
                     {
-
-                      Serial.println("Get all temperatures command received");
-                      TempRecord_st records[gNumberNodes];
-                      uint16_t numberReadElements;
-
-                      Serial.println("Get all temperatures");
-                      get_temperature_all_nodes(records,&numberReadElements);
-
-                      
-                      Serial.println("Composed TM");
-                      tm[0]=0xca;
-                      tm[1]=0xfe;
-                      
-                      memcpy(&tm[2],records,sizeof(TempRecord_st)*numberReadElements);
-
-                      Serial.println("Send Telemetry");
-                      client.println((char *)tm);
+											command_get_all_temps(command);
                       break;
                     }
                     
                   case GETALLTEMPSMINUTES:
                     {
-                      Serial.println("Get all temperatures minutes command received");
-                      uint16_t minutes;
-
-                      memcpy(&minutes,&command[2],sizeof(uint16_t));
-
-                      TempRecord_st records[gNumberNodes][minutes];
-                      uint16_t      tempnumber[gNumberNodes];
-                      uint8_t       readNodes;
-                      uint8_t numberReadElements;
-
-                      Serial.println("Get all temperatures per minute");
-
-                      get_all_temperature_last_n_minutes(minutes,(TempRecord_st *)records,tempnumber,&readNodes);
-                      
-                      
-                      Serial.println("Composed TM");
-                      tm[0]=0xca;
-                      tm[1]=0xfe;
-                      
-                      memcpy(&tm[2],records,sizeof(TempRecord_st)*readNodes*minutes);
-
-                      Serial.println("Send Telemetry");
-                      client.println((char *) tm);
-
-                      
-                      break;
-                  
-
-                    }
+											command_get_all_temps_minutes(command);
+											break;
+										}
                     
                   case GETTEMP:
                     {
-                      uint8_t       node;
-                      TempRecord_st record;
-                      uint16_t      minutes;
-                      
-                      node = command[2];
-
-                      record = get_temperature(node);
-
-                      Serial.println("Composed TM");
-                      
-                      tm[0]=0xca;
-                      tm[1]=0xfe;
-                      
-                      memcpy(&tm[2],&record,sizeof(TempRecord_st));
-                      
-                      
+                      command_get_temp(command);
                       break;
                     }
                   case GETTEMPMINUTES:
                     {
-
-                      uint8_t       node;               
-                      uint16_t      minutes;
-                      TempRecord_st record[minutes];
-
-                      
-                      node = command[2];
-                      memcpy(&minutes,&command[3],sizeof(uint16_t));
-
-                      get_temperature_last_n_minutes(node,&minutes,record );
-
-
-
-                      Serial.println("Composed TM");
-                      
-                      tm[0]=0xca;
-                      tm[1]=0xfe;
-                      
-                      memcpy(&tm[2],record,sizeof(TempRecord_st)*minutes);
-                                    
+											command_get_temp_minutes(command);
+											
                       break;
                     }
                   default:
@@ -565,18 +520,7 @@ static void command_manager (void)
                   {
                   case GETSTATUS:
                     {
-                      uint8_t node= atoi((const char *)&command[2]);
-                      uint8_t status;
-                      
-                      status = getReleStatus(node);
-
-                      tm[0]=0xca;
-                      tm[1]=0xfe;
-                      tm[2] = status;
-                      tm[3] = '\0';
-
-                      client.print((char *)tm);
-                    
+											command_rele_get_status(command);
                       break;
                     }
                   case   GETALLSTATUS:
@@ -588,15 +532,19 @@ static void command_manager (void)
                     }
                   case   GETSWITCHON:
                     {
+											command_rele_get_switch_on(command);
                       break;
                     }
                   case   GETSWITCHALLSWITCHON:
                     {
+											command_rele_get_all_switch_on(command);
                       break;
                     }
 
                   case   SETRELE:
                     {
+
+											command_rele_set_status(command;)
                       break;
                       
                     }
@@ -614,20 +562,25 @@ static void command_manager (void)
                   {
                   case GETNUMBERNODES:
                     {
+
+											command_info_node_get_number_nodes(command);
                       break;
                     }
                     
                   case  GETALLNODEINFO:
                     {
+											command_info_node_get_all_node_info(command);
                       break;
                     }
 
                   case GETNODEINFO:
                     {
+											command_info_node_get_node_info(command);
                       break;
                     }
                   case SETNODEINFO:
                     {
+											command_info_set_node_info(command);
                       break;
                     }
                   default:
@@ -643,11 +596,11 @@ static void command_manager (void)
               {
                 if (command[1] == SETINFOCENTRAL)
                   {
-
+										command_central_info_set_info(command);
                   }
                 else
                   {
-                    
+                    command_central_info_get_info(command);
                   }
                 break;
               }
@@ -655,7 +608,7 @@ static void command_manager (void)
             default:
               {
                 Serial.println("Invalid Command");
-                  }
+							}
 
             }
 
@@ -668,6 +621,180 @@ static void command_manager (void)
 
 bool_t command_get_all_temps(uint8_t * command)
 {
+	Serial.println("Get all temperatures command received");
+	TempRecord_st records[gNumberNodes];
+	uint16_t numberReadElements;
+
+	Serial.println("Get all temperatures");
+	get_temperature_all_nodes(records,&numberReadElements);
+
+                      
+	Serial.println("Composed TM");
+	tm[0]=0xca;
+	tm[1]=0xfe;
+                      
+	memcpy(&tm[2],records,sizeof(TempRecord_st)*numberReadElements);
+
+	Serial.println("Send Telemetry");
+	client.println((char *)tm);
+
+	return true;
 
 
 }
+bool_t  command_get_all_temps_minutes(uint8_t * command)
+{
+	Serial.println("Get all temperatures minutes command received");
+	uint16_t minutes;
+
+	memcpy(&minutes,&command[2],sizeof(uint16_t));
+
+	TempRecord_st records[gNumberNodes][minutes];
+	uint16_t      tempnumber[gNumberNodes];
+	uint8_t       readNodes;
+	uint8_t numberReadElements;
+
+	Serial.println("Get all temperatures per minute");
+
+	get_all_temperature_last_n_minutes(minutes,(TempRecord_st *)records,tempnumber,&readNodes);
+                      
+                      
+	Serial.println("Composed TM");
+	tm[0]=0xca;
+	tm[1]=0xfe;
+                      
+	memcpy(&tm[2],records,sizeof(TempRecord_st)*readNodes*minutes);
+
+	Serial.println("Send Telemetry");
+	client.println((char *) tm);
+
+	return true;
+
+}
+
+bool_t command_get_temp(uint8_t * command )
+{
+	uint8_t       node;
+	TempRecord_st record;
+	uint16_t      minutes;
+                      
+	node = command[2];
+
+	record = g(node);
+
+	Serial.println("Composed TM");
+                      
+	tm[0]=0xca;
+	tm[1]=0xfe;
+                      
+	memcpy(&tm[2],&record,sizeof(TempRecord_st));
+                      
+	return true;
+}
+
+
+bool_t command_get_temp_minutes(uint8_t command)
+{
+	uint8_t       node;               
+	uint16_t      minutes;
+	TempRecord_st record[minutes];
+
+                      
+	node = command[2];
+	memcpy(&minutes,&command[3],sizeof(uint16_t));
+
+	get_temperature_last_n_minutes(node,&minutes,record );
+
+	Serial.println("Composed TM");
+                      
+	tm[0]=0xca;
+	tm[1]=0xfe;
+                      
+	memcpy(&tm[2],record,sizeof(TempRecord_st)*minutes);
+
+	return true;
+}
+
+
+bool_t command_rele_get_status(const uint8_t * command)
+{
+	uint8_t node= atoi((const char *)&command[2]);
+	uint8_t status;
+                      
+	status = getReleStatus(node);
+
+	tm[0]=0xca;
+	tm[1]=0xfe;
+	tm[2] = status;
+	tm[3] = '\0';
+
+	client.print((char *)tm);
+
+}
+/*TODO*/
+bool_t command_rele_get_all_status(const uint8_t * command)
+{
+
+}
+
+/*TODO*/
+
+bool_t command_rele_get_switch_on(const uint8_t * command)
+{
+
+	return true;
+}
+
+/*TODO */
+bool_t command_rele_get_all_switch_on(const uint8_t * command)
+{
+
+	return true;
+}
+
+
+/*TODO*/
+bool_t command_rele_set_status(const uint8_t * command)
+{
+
+	return true;
+}
+
+bool_t command_info_node_get_number_nodes(const uint8_t * command)
+{
+
+	return true;
+}
+
+bool_t command_info_node_get_all_node_info(const uint8_t * command)
+{
+
+	return true;
+}
+
+bool_t command_info_node_get_node_info(const uint8_t * command )
+{
+
+	return true;
+}
+
+
+bool_t command_info_set_node_info(const uint8_t * command)
+{
+
+	return true;
+}
+
+
+bool_t command_central_info_set_info (const uint8_t * command)
+{
+
+	return true;
+}
+
+bool_t command_central_info_get_info(const uint8_t * command)
+{
+
+	return true;
+}
+
